@@ -33,4 +33,10 @@ Desktop.ini
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local 
+.env.production.local
+
+# Python虚拟环境
+ai-project-env/
+venv/
+env/
+.venv/ 

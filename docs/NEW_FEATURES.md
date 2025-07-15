@@ -10,7 +10,7 @@
 
 ### 色彩系统
 ```css
-主色调：#007AFF (iOS蓝)
+主色调：#00D8C4 (青绿色)
 成功色：#34C759 (iOS绿)
 警告色：#FF9500 (iOS橙)
 错误色：#FF3B30 (iOS红)
@@ -182,7 +182,7 @@
 ### 主题定制
 ```css
 :root {
-    --primary-color: #007AFF;    /* 主色调 */
+    --primary-color: #00D8C4;    /* 主色调 */
     --surface-color: #FFFFFF;    /* 表面色 */
     --text-primary: #000000;     /* 主文字色 */
     --border-color: #E5E5EA;     /* 边框色 */

@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendFeedbackBtn = document.getElementById('sendFeedbackBtn');
     const feedbackInput = document.getElementById('feedbackInput');
     
+    // Console日志查看器相关元素
+    const consoleLogsBtn = document.getElementById('consoleLogsBtn');
+    const consoleLogsModal = document.getElementById('consoleLogsModal');
+    const closeConsoleLogsModal = document.getElementById('closeConsoleLogsModal');
+    const consoleLogsViewContainer = document.getElementById('consoleLogsViewContainer');
+    const consoleLogCount = document.getElementById('consoleLogCount');
+    const clearConsoleLogsBtn = document.getElementById('clearConsoleLogsBtn');
+    const refreshConsoleLogsBtn = document.getElementById('refreshConsoleLogsBtn');
+    
     // 从URL参数获取目标网站地址
     const urlParams = new URLSearchParams(window.location.search);
     const targetFromUrl = urlParams.get('target');
@@ -45,6 +54,76 @@ document.addEventListener('DOMContentLoaded', function() {
     let progressInterval;
     let connectionStatus = 'connecting';
     let isFeedbackModalOpen = false;
+    
+    // Console日志收集
+    let consoleLogs = [];
+    const maxLogs = 50; // 最多保存50条日志
+    
+    // 拦截console方法
+    const originalConsole = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn,
+        info: console.info
+    };
+    
+    // 添加日志项
+    function addLogItem(type, args) {
+        const timestamp = new Date().toLocaleTimeString();
+        const message = args.map(arg => {
+            if (typeof arg === 'object') {
+                try {
+                    return JSON.stringify(arg, null, 2);
+                } catch (e) {
+                    return String(arg);
+                }
+            }
+            return String(arg);
+        }).join(' ');
+        
+        const logItem = {
+            type: type,
+            message: message,
+            timestamp: timestamp,
+            time: Date.now()
+        };
+        
+        consoleLogs.unshift(logItem);
+        
+        // 保持日志数量在限制范围内
+        if (consoleLogs.length > maxLogs) {
+            consoleLogs = consoleLogs.slice(0, maxLogs);
+        }
+        
+        // 如果console日志查看器是打开的，实时更新
+        if (consoleLogsModal && consoleLogsModal.classList.contains('show')) {
+            updateConsoleLogsView();
+        } else if (consoleLogCount) {
+            // 只更新计数
+            consoleLogCount.textContent = consoleLogs.length;
+        }
+    }
+    
+    // 重写console方法
+    console.log = function(...args) {
+        addLogItem('log', args);
+        originalConsole.log.apply(console, args);
+    };
+    
+    console.error = function(...args) {
+        addLogItem('error', args);
+        originalConsole.error.apply(console, args);
+    };
+    
+    console.warn = function(...args) {
+        addLogItem('warn', args);
+        originalConsole.warn.apply(console, args);
+    };
+    
+    console.info = function(...args) {
+        addLogItem('info', args);
+        originalConsole.info.apply(console, args);
+    };
     
     // 更新连接状态
     function updateConnectionStatus(status) {
@@ -451,6 +530,38 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
     }
     
+    // 更新console日志查看器
+    function updateConsoleLogsView() {
+        if (consoleLogCount) {
+            consoleLogCount.textContent = consoleLogs.length;
+        }
+        
+        if (!consoleLogsViewContainer) return;
+        
+        if (consoleLogs.length === 0) {
+            consoleLogsViewContainer.innerHTML = '<div class="console-logs-empty">暂无console日志</div>';
+            return;
+        }
+        
+        // 显示所有日志
+        const logsHTML = consoleLogs.map(log => `
+            <div class="console-log-item">
+                <div class="console-log-time">${log.timestamp}</div>
+                <div class="console-log-type ${log.type}">${log.type}</div>
+                <div class="console-log-message">${escapeHtml(log.message)}</div>
+            </div>
+        `).join('');
+        
+        consoleLogsViewContainer.innerHTML = logsHTML;
+    }
+    
+    // HTML转义函数
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
     // TapCode对话模态框功能
     function openFeedbackModal() {
         aiFeedbackModal.classList.add('show');
@@ -498,6 +609,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 准备发送数据
         const feedbackData = {
             userMessage: userMessage,
+            consoleLogs: consoleLogs.slice(0, 20), // 只发送最近20条日志
             timestamp: new Date().toISOString(),
             url: PREVIEW_URL,
             userAgent: navigator.userAgent,
@@ -590,6 +702,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Console日志查看器功能
+    if (consoleLogsBtn) {
+        consoleLogsBtn.addEventListener('click', function() {
+            openConsoleLogsModal();
+            closeSideMenuFunc();
+        });
+    }
+    
+    if (closeConsoleLogsModal) {
+        closeConsoleLogsModal.addEventListener('click', function() {
+            closeConsoleLogsModalFunc();
+        });
+    }
+    
+    if (clearConsoleLogsBtn) {
+        clearConsoleLogsBtn.addEventListener('click', function() {
+            clearConsoleLogs();
+        });
+    }
+    
+    if (refreshConsoleLogsBtn) {
+        refreshConsoleLogsBtn.addEventListener('click', function() {
+            updateConsoleLogsView();
+            showToast('日志已刷新');
+        });
+    }
+    
+    // 点击模态框外部关闭console日志查看器
+    if (consoleLogsModal) {
+        consoleLogsModal.addEventListener('click', function(event) {
+            if (event.target === consoleLogsModal) {
+                closeConsoleLogsModalFunc();
+            }
+        });
+    }
+    
+    // Console日志查看器功能函数
+    function openConsoleLogsModal() {
+        consoleLogsModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        updateConsoleLogsView();
+    }
+    
+    function closeConsoleLogsModalFunc() {
+        consoleLogsModal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    function clearConsoleLogs() {
+        consoleLogs = [];
+        updateConsoleLogsView();
+        showToast('控制台日志已清空');
+    }
+    
     // 监听全屏状态变化
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
@@ -611,6 +777,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.key === 'Escape') {
             if (isFeedbackModalOpen) {
                 closeFeedbackModalFunc();
+            } else if (consoleLogsModal && consoleLogsModal.classList.contains('show')) {
+                closeConsoleLogsModalFunc();
             } else if (isMenuOpen) {
                 closeSideMenuFunc();
             } else if (isFullscreen) {

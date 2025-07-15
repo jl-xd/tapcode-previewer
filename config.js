@@ -19,7 +19,7 @@ const CONFIG = {
     
     // 主题配置
     THEME: {
-        primary: '#667eea',
+        primary: '#00D8C4',
         secondary: '#764ba2',
         success: '#28a745',
         warning: '#ffc107',

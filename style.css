@@ -1,6 +1,6 @@
 /* 全局样式和变量 */
 :root {
-    --primary-color: #007AFF;
+    --primary-color: #00D8C4;
     --secondary-color: #5856D6;
     --success-color: #34C759;
     --error-color: #FF3B30;
@@ -61,7 +61,7 @@ body {
 /* 浮动工具栏 */
 .floating-toolbar {
     position: fixed;
-    bottom: 16px;
+    bottom: 32px;
     left: 24px;
     right: 24px;
     z-index: var(--z-toolbar);
@@ -579,7 +579,7 @@ input:checked + .slider:before {
 /* 响应式设计 */
 @media (max-width: 768px) {
     .floating-toolbar {
-        bottom: 12px;
+        bottom: 24px;
         left: 20px;
         right: 20px;
     }
@@ -635,7 +635,7 @@ input:checked + .slider:before {
     }
     
     .ai-feedback-btn {
-        bottom: 90px;
+        bottom: 100px;
         right: 16px;
         width: 56px;
         height: 56px;
@@ -677,7 +677,7 @@ input:checked + .slider:before {
 
 @media (max-width: 480px) {
     .floating-toolbar {
-        bottom: 8px;
+        bottom: 20px;
         left: 16px;
         right: 16px;
     }
@@ -732,7 +732,7 @@ input:checked + .slider:before {
     }
     
     .ai-feedback-btn {
-        bottom: 80px;
+        bottom: 88px;
         right: 12px;
         width: 52px;
         height: 52px;
@@ -772,7 +772,7 @@ input:checked + .slider:before {
 /* 横屏适配 */
 @media (orientation: landscape) and (max-height: 500px) {
     .floating-toolbar {
-        bottom: 8px;
+        bottom: 16px;
     }
     
     .toolbar-content {
@@ -965,6 +965,158 @@ body.dark-mode .btn-secondary:hover {
     color: var(--text-primary);
 }
 
+/* 深色模式下的console日志预览 */
+body.dark-mode .console-logs-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .console-log-item {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .console-log-message {
+    color: #d4d4d4;
+}
+
+body.dark-mode .console-log-type.log {
+    background: rgba(116, 185, 255, 0.2);
+    color: #74b9ff;
+}
+
+body.dark-mode .console-log-type.error {
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
+body.dark-mode .console-log-type.warn {
+    background: rgba(255, 217, 61, 0.2);
+    color: #ffd93d;
+}
+
+body.dark-mode .console-log-type.info {
+    background: rgba(116, 185, 255, 0.2);
+    color: #74b9ff;
+}
+
+/* Console日志模态框 */
+.console-logs-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: var(--blur-light);
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.console-logs-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.console-modal-content {
+    background: var(--surface-color);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--border-color);
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.8) translateY(20px);
+    transition: all var(--transition-normal);
+}
+
+.console-logs-modal.show .console-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.console-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: var(--radius-large) var(--radius-large) 0 0;
+}
+
+.console-modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.console-modal-body {
+    padding: 24px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.console-info {
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: rgba(116, 185, 255, 0.08);
+    border: 1px solid rgba(116, 185, 255, 0.15);
+    border-radius: var(--radius-medium);
+    color: var(--text-secondary);
+}
+
+.console-info p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.console-modal-body .console-logs-container {
+    flex: 1;
+    max-height: none;
+    margin-bottom: 16px;
+}
+
+.console-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+
+
+/* 深色模式下的console日志模态框 */
+body.dark-mode .console-modal-content {
+    background: rgba(28, 28, 30, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .console-modal-header {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .feedback-info {
+    background: rgba(116, 185, 255, 0.12);
+    border-color: rgba(116, 185, 255, 0.25);
+    color: #d4d4d4;
+}
+
+body.dark-mode .console-info {
+    background: rgba(116, 185, 255, 0.12);
+    border-color: rgba(116, 185, 255, 0.25);
+    color: #d4d4d4;
+}
+
 /* 动画优化 */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -1006,7 +1158,7 @@ body.dark-mode .btn-secondary:hover {
 /* AI反馈按钮 */
 .ai-feedback-btn {
     position: fixed;
-    bottom: 110px;
+    bottom: 130px;
     right: 24px;
     width: 64px;
     height: 64px;
@@ -1115,11 +1267,11 @@ body.dark-mode .btn-secondary:hover {
 
 .feedback-info {
     margin-bottom: 20px;
-    padding: 16px;
-    background: var(--primary-color);
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 12px 16px;
+    background: rgba(116, 185, 255, 0.08);
+    border: 1px solid rgba(116, 185, 255, 0.15);
     border-radius: var(--radius-medium);
-    color: var(--text-white);
+    color: var(--text-secondary);
 }
 
 .feedback-info p {
@@ -1165,7 +1317,93 @@ body.dark-mode .btn-secondary:hover {
     color: var(--text-tertiary);
 }
 
+/* Console日志预览 */
+.console-logs-preview {
+    margin-bottom: 20px;
+}
 
+.console-logs-preview label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.console-logs-container {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-medium);
+    max-height: 150px;
+    overflow-y: auto;
+    font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.console-logs-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.console-log-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.console-log-item:last-child {
+    border-bottom: none;
+}
+
+.console-log-time {
+    flex-shrink: 0;
+    color: var(--text-tertiary);
+    font-size: 11px;
+    min-width: 60px;
+}
+
+.console-log-type {
+    flex-shrink: 0;
+    font-weight: 600;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    min-width: 45px;
+    text-align: center;
+}
+
+.console-log-type.log {
+    background: rgba(116, 185, 255, 0.1);
+    color: #74b9ff;
+}
+
+.console-log-type.error {
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+}
+
+.console-log-type.warn {
+    background: rgba(255, 217, 61, 0.1);
+    color: #ffd93d;
+}
+
+.console-log-type.info {
+    background: rgba(116, 185, 255, 0.1);
+    color: #74b9ff;
+}
+
+.console-log-message {
+    flex: 1;
+    color: var(--text-primary);
+    word-break: break-word;
+    white-space: pre-wrap;
+}
 
 .feedback-actions {
     display: flex;

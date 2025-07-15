@@ -988,7 +988,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('TapCode对话数据:', feedbackData);
             
             // 显示成功消息
-            showToast('消息已发送给TapCode，感谢您的反馈！', 'success');
+            showToast('消息已发送给 TapCode ！', 'success');
             
             // 关闭模态框
             closeFeedbackModalFunc();
@@ -1004,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // })
             // .then(response => response.json())
             // .then(data => {
-            //     showToast('消息已发送给TapCode，感谢您的反馈！', 'success');
+            //     showToast('消息已发送给 TapCode ！', 'success');
             //     closeFeedbackModalFunc();
             // })
             // .catch(error => {

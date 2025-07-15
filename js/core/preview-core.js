@@ -47,6 +47,8 @@ class PreviewCore {
             });
         }
         
+
+        
         // 刷新按钮
         if (this.elements.refreshBtn) {
             this.elements.refreshBtn.addEventListener('click', () => {
@@ -91,8 +93,9 @@ class PreviewCore {
         const urlParams = new URLSearchParams(window.location.search);
         const targetFromUrl = urlParams.get('target');
         
-        // 预览网站URL
-        const previewUrl = targetFromUrl || window.CONFIG?.DEFAULT_PREVIEW_URL || '';
+        // 预览网站URL - 提供fallback URL
+        const fallbackUrl = 'https://preview.auv.spark.xd.com/p/md3z7hor';
+        const previewUrl = targetFromUrl || window.CONFIG?.DEFAULT_PREVIEW_URL || fallbackUrl;
         this.state.currentUrl = previewUrl;
         
         // 更新URL显示
@@ -102,17 +105,29 @@ class PreviewCore {
         
         // 加载预览
         this.loadPreview(previewUrl);
+        
+        // 确保即使没有URL也隐藏loading（防止卡住）
+        if (!previewUrl) {
+            console.warn('⚠️ 没有预览URL，隐藏加载屏幕');
+            setTimeout(() => this.hideLoading(), 1000);
+        }
     }
     
     // 加载预览
     loadPreview(url) {
-        if (!url || !this.elements.previewFrame) return;
+        if (!url || !this.elements.previewFrame) {
+            console.warn('⚠️ loadPreview: URL为空或iframe元素未找到');
+            this.hideLoading(); // 确保隐藏加载屏幕
+            return;
+        }
         
         this.state.isLoading = true;
         this.state.currentUrl = url;
         
         // 显示加载状态
         this.showLoading();
+        
+        console.log('🔄 开始加载预览:', url);
         
         // 设置iframe源
         this.elements.previewFrame.src = url;

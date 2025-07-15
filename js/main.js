@@ -13,8 +13,42 @@
             'ConsoleLogger', 
             'TapCodeChat',
             'ThemeManager',
+            'PreviewCore',
+            'UIInteraction',
             'AppManager'
         ];
+        
+        console.log('🔍 检查模块依赖...');
+        
+        // 先检查CONFIG，如果没有就创建fallback
+        if (window.CONFIG) {
+            console.log('✅ CONFIG 配置已加载');
+        } else {
+            console.warn('⚠️ CONFIG 配置未找到，使用fallback配置');
+            // 创建fallback CONFIG
+            window.CONFIG = {
+                DEFAULT_PREVIEW_URL: 'https://preview.auv.spark.xd.com/p/md3z7hor',
+                LOAD_TIMEOUT: 15000,
+                TOAST_DURATION: 3000,
+                APP_INFO: {
+                    name: 'TapCode 预览器',
+                    version: '1.0.0'
+                },
+                FEATURES: {
+                    enableEnhancedDebugging: true
+                }
+            };
+            console.log('✅ Fallback CONFIG 已创建');
+        }
+        
+        // 检查每个模块
+        requiredClasses.forEach(className => {
+            if (window[className]) {
+                console.log(`✅ 模块 ${className} 已加载`);
+            } else {
+                console.error(`❌ 模块 ${className} 未找到`);
+            }
+        });
         
         const missing = requiredClasses.filter(className => !window[className]);
         
@@ -23,6 +57,7 @@
             return false;
         }
         
+        console.log('✅ 所有依赖模块检查通过');
         return true;
     }
     
@@ -89,10 +124,7 @@
         }
         
         try {
-            // 创建应用管理器实例
-            window.appManager = new window.AppManager();
-            
-            // 监听应用启动完成事件
+            // 先注册事件监听器，再创建应用管理器实例
             document.addEventListener('appready', function(event) {
                 console.log('✅ 应用启动完成:', event.detail);
                 hideLoadingIndicator();
@@ -100,6 +132,20 @@
                 // 可以在这里添加启动完成后的额外逻辑
                 onAppReady(event.detail);
             });
+            
+            // 创建应用管理器实例
+            console.log('🚀 创建应用管理器实例...');
+            window.appManager = new window.AppManager();
+            
+            // 设置超时检测，如果5秒后还没完成就报错
+            setTimeout(() => {
+                if (!window.appManager?.isInitialized) {
+                    console.error('⏰ 应用启动超时，可能某个模块卡住了');
+                    console.log('🔍 当前模块状态:', window.appManager?.modules);
+                    hideLoadingIndicator();
+                    showErrorPage('应用启动超时，可能某个模块初始化失败');
+                }
+            }, 5000);
             
         } catch (error) {
             console.error('❌ 应用启动失败:', error);
@@ -275,7 +321,15 @@
         openDebugPanel,
         clearAllDebugData,
         restart: () => window.appManager?.restart(),
-        getStatus: () => window.appManager?.getAppStatus()
+        getStatus: () => window.appManager?.getAppStatus(),
+        testConsoleLogging: () => {
+            if (window.consoleLogger) {
+                return window.consoleLogger.testLogging();
+            } else {
+                console.error('ConsoleLogger未找到');
+                return 0;
+            }
+        }
     };
     
     console.log('📦 TapCode 预览器主入口文件已加载');

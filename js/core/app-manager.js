@@ -28,14 +28,21 @@ class AppManager {
     // 初始化应用
     initializeApp() {
         try {
+            console.log('🏁 开始应用初始化...');
+            
             // 按顺序初始化各个模块
+            console.log('📦 步骤1: 初始化模块...');
             this.initializeModules();
             
             // 设置全局错误处理
+            console.log('🛡️ 步骤2: 设置全局错误处理...');
             this.setupGlobalErrorHandling();
             
             // 初始化完成
+            console.log('✅ 步骤3: 标记初始化完成...');
             this.isInitialized = true;
+            
+            console.log('🎊 步骤4: 调用完成回调...');
             this.onInitializationComplete();
             
         } catch (error) {
@@ -47,21 +54,27 @@ class AppManager {
     // 初始化各个模块
     initializeModules() {
         const initOrder = [
+            'consoleLogger',    // 必须最先初始化，以拦截其他模块的console日志
             'debugContext',
-            'consoleLogger',
             'themeManager',
             'previewCore',
             'uiInteraction',
             'tapCodeChat'
         ];
         
+        console.log('📦 开始初始化模块...');
+        
         initOrder.forEach(moduleName => {
             try {
+                console.log(`🔄 正在初始化模块: ${moduleName}`);
                 this.initializeModule(moduleName);
+                console.log(`✅ 模块 ${moduleName} 初始化成功`);
             } catch (error) {
                 console.error(`❌ 模块 ${moduleName} 初始化失败:`, error);
             }
         });
+        
+        console.log('📦 所有模块初始化完成');
     }
     
     // 初始化单个模块
@@ -69,43 +82,61 @@ class AppManager {
         switch (moduleName) {
             case 'debugContext':
                 if (window.DebugContext) {
+                    console.log('🔍 创建 DebugContext 实例...');
                     this.modules.debugContext = new window.DebugContext();
                     window.debugContext = this.modules.debugContext;
+                } else {
+                    console.warn(`⚠️ 模块类 DebugContext 不存在`);
                 }
                 break;
                 
             case 'consoleLogger':
                 if (window.ConsoleLogger) {
+                    console.log('📝 创建 ConsoleLogger 实例...');
                     this.modules.consoleLogger = new window.ConsoleLogger();
                     window.consoleLogger = this.modules.consoleLogger;
+                } else {
+                    console.warn(`⚠️ 模块类 ConsoleLogger 不存在`);
                 }
                 break;
                 
             case 'themeManager':
                 if (window.ThemeManager) {
+                    console.log('🎨 创建 ThemeManager 实例...');
                     this.modules.themeManager = new window.ThemeManager();
                     window.themeManager = this.modules.themeManager;
+                } else {
+                    console.warn(`⚠️ 模块类 ThemeManager 不存在`);
                 }
                 break;
                 
             case 'previewCore':
                 if (window.PreviewCore) {
+                    console.log('🖥️ 创建 PreviewCore 实例...');
                     this.modules.previewCore = new window.PreviewCore();
                     window.previewCore = this.modules.previewCore;
+                } else {
+                    console.warn(`⚠️ 模块类 PreviewCore 不存在`);
                 }
                 break;
                 
             case 'uiInteraction':
                 if (window.UIInteraction) {
+                    console.log('🎮 创建 UIInteraction 实例...');
                     this.modules.uiInteraction = new window.UIInteraction();
                     window.uiInteraction = this.modules.uiInteraction;
+                } else {
+                    console.warn(`⚠️ 模块类 UIInteraction 不存在`);
                 }
                 break;
                 
             case 'tapCodeChat':
                 if (window.TapCodeChat) {
+                    console.log('💬 创建 TapCodeChat 实例...');
                     this.modules.tapCodeChat = new window.TapCodeChat();
                     window.tapCodeChat = this.modules.tapCodeChat;
+                } else {
+                    console.warn(`⚠️ 模块类 TapCodeChat 不存在`);
                 }
                 break;
                 
@@ -118,13 +149,13 @@ class AppManager {
     setupGlobalErrorHandling() {
         // 全局未捕获错误处理
         window.addEventListener('error', (event) => {
-            console.error('全局错误:', event.error);
+            // 避免console.error被拦截导致循环，直接处理错误
             this.handleGlobalError(event.error);
         });
         
         // Promise rejection处理
         window.addEventListener('unhandledrejection', (event) => {
-            console.error('未处理的Promise rejection:', event.reason);
+            // 避免console.error被拦截导致循环，直接处理错误
             this.handleGlobalError(event.reason);
         });
     }
@@ -152,14 +183,37 @@ class AppManager {
         console.log(`✅ TapCode预览器启动完成! 耗时: ${loadTime}ms`);
         console.log('📦 已加载模块:', Object.keys(this.modules));
         
+        console.log('📋 显示应用信息...');
         // 显示应用信息
         this.logAppInfo();
         
+        console.log('🚀 触发初始化完成事件...');
         // 触发初始化完成事件
         this.dispatchInitEvent();
         
+        console.log('👆 设置用户交互追踪...');
         // 设置用户交互追踪
         this.setupUserInteractionTracking();
+        
+        console.log('🎉 所有初始化步骤完成！');
+        
+        // 确保隐藏loading screen（防止卡住）
+        console.log('🔧 确保隐藏加载屏幕...');
+        this.ensureLoadingScreenHidden();
+    }
+    
+    // 确保loading screen被隐藏
+    ensureLoadingScreenHidden() {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
+            console.log('🔧 强制隐藏loading screen');
+            loadingOverlay.classList.add('hidden');
+        }
+        
+        // 如果有previewCore实例，也调用它的hideLoading方法
+        if (this.modules.previewCore) {
+            this.modules.previewCore.hideLoading();
+        }
     }
     
     // 记录应用信息

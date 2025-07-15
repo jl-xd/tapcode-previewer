@@ -235,7 +235,7 @@ class TapCodeChat {
             console.log('TapCode对话数据:', feedbackData);
             
             // 显示成功消息
-            this.showToast('消息已发送给TapCode，感谢您的反馈！', 'success');
+            this.showToast('消息已发送给 TapCode ！', 'success');
             
             // 关闭模态框
             this.closeModal();
@@ -263,7 +263,7 @@ class TapCodeChat {
             
             const result = await response.json();
             
-            this.showToast('消息已发送给TapCode，感谢您的反馈！', 'success');
+            this.showToast('消息已发送给 TapCode ！', 'success');
             this.closeModal();
             
             return result;

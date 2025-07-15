@@ -304,7 +304,7 @@ class UIInteraction {
         // 创建全局showToast函数
         window.showToast = (message, type = 'success') => {
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
+            toast.className = `dynamic-toast ${type}`;
             toast.textContent = message;
             
             // 设置样式

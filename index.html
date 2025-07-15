@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>TapCode 预览器</title>
+    
+    <!-- AI调试上下文信息 -->
+    <meta name="generator" content="TapCode AI">
+    <meta name="framework" content="vanilla-js">
+    <meta name="target-platform" content="mobile-web">
+    <meta name="build-date" content="2024-01-15">
+    <meta name="build-hash" content="dev-latest">
+    <meta name="environment" content="development">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -243,7 +251,26 @@
         <div class="overlay" id="overlay"></div>
     </div>
 
+    <!-- 配置文件 -->
     <script src="config.js"></script>
-    <script src="script.js"></script>
+    
+    <!-- 核心模块 -->
+    <script src="js/core/preview-core.js"></script>
+    <script src="js/core/ui-interaction.js"></script>
+    <script src="js/core/app-manager.js"></script>
+    
+    <!-- 功能模块 -->
+    <script src="js/features/debug-context.js"></script>
+    <script src="js/features/console-logger.js"></script>
+    <script src="js/features/tapcode-chat.js"></script>
+    
+    <!-- 工具模块 -->
+    <script src="js/utils/theme-manager.js"></script>
+    
+    <!-- 主入口文件 -->
+    <script src="js/main.js"></script>
+    
+    <!-- 旧版script.js备份 -->
+    <!-- <script src="script.js"></script> -->
 </body>
 </html> 

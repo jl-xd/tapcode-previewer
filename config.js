@@ -54,7 +54,15 @@ const CONFIG = {
         enableNetworkMonitoring: true,
         
         // 是否显示底部版权信息
-        showFooter: true
+        showFooter: true,
+        
+        // AI调试增强功能
+        enableEnhancedDebugging: true,
+        enableErrorCollection: true,
+        enableNetworkRequestTracking: true,
+        enableUserInteractionTracking: true,
+        enableDOMSnapshotCollection: true,
+        enablePerformanceMonitoring: true
     },
     
     // iframe 安全配置
@@ -97,6 +105,39 @@ const CONFIG = {
         NETWORK_RESTORED: '网络连接已恢复',
         QR_GENERATED: '二维码生成成功！',
         IP_DETECTED: '已自动获取本机IP地址'
+    },
+    
+    // AI调试配置
+    AI_DEBUGGING: {
+        // 数据收集限制
+        maxConsoleLogs: 50,
+        maxErrors: 20,
+        maxNetworkRequests: 30,
+        maxUserInteractions: 50,
+        
+        // 发送给AI的数据量
+        sendConsoleLogs: 20,
+        sendErrors: 5,
+        sendNetworkRequests: 10,
+        sendUserInteractions: 10,
+        
+        // 收集详细程度
+        collectStackTraces: true,
+        collectElementPaths: true,
+        collectPerformanceMetrics: true,
+        collectDeviceCapabilities: true,
+        collectNetworkInfo: true,
+        
+        // 自动触发条件
+        autoTriggerOnError: false,
+        autoTriggerOnPerformanceIssue: false,
+        
+        // 数据过期时间（毫秒）
+        dataExpirationTime: 30 * 60 * 1000, // 30分钟
+        
+        // 隐私保护
+        excludePersonalData: true,
+        hashSensitiveUrls: true
     }
 };
 

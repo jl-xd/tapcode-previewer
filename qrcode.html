@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TapCode 二维码生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #28a745;
+        }
+
+        .btn-secondary:hover {
+            background: #1e7e34;
+        }
+
+        .qr-container {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px dashed #e1e5e9;
+            border-radius: 12px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .qr-placeholder {
+            color: #999;
+            font-size: 18px;
+        }
+
+        #qrcode {
+            margin-bottom: 15px;
+        }
+
+        .url-display {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            text-align: left;
+            color: #1565c0;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #0d47a1;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .network-info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .preview-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .preview-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 TapCode 二维码生成器</h1>
+        
+        <div class="input-group">
+            <label for="previewUrl">预览器地址:</label>
+            <input type="text" id="previewUrl" placeholder="输入预览器的访问地址" value="">
+        </div>
+        
+        <div class="input-group">
+            <label for="targetUrl">目标网站URL:</label>
+            <input type="text" id="targetUrl" placeholder="输入要预览的网站地址" value="https://preview.auv.spark.xd.com/p/md3z7hor">
+        </div>
+        
+        <button class="btn" onclick="generateQRCode()">生成二维码</button>
+        <button class="btn btn-secondary" onclick="getLocalIP()">获取本机IP</button>
+        
+        <div class="qr-container">
+            <div id="qrcode"></div>
+            <div class="qr-placeholder" id="placeholder">
+                点击"生成二维码"按钮创建二维码
+            </div>
+        </div>
+        
+        <div class="url-display" id="finalUrl" style="display: none;"></div>
+        
+        <a href="index.html" class="preview-link" target="_blank">📱 打开预览器测试</a>
+        
+        <div class="instructions">
+            <h3>📋 使用说明:</h3>
+            <ol>
+                <li>在"预览器地址"中输入你部署的预览器地址 (如: http://192.168.1.100:8000)</li>
+                <li>在"目标网站URL"中输入要预览的网站地址</li>
+                <li>点击"生成二维码"按钮</li>
+                <li>使用手机扫描二维码即可在手机上预览网站</li>
+            </ol>
+        </div>
+        
+        <div class="network-info">
+            <strong>💡 提示:</strong> 确保手机和电脑在同一局域网内，并且电脑的Web服务器已启动。
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script>
+        // 页面加载时自动获取本机IP
+        window.onload = function() {
+            autoDetectIP();
+        };
+
+        // 自动检测本机IP
+        function autoDetectIP() {
+            // 尝试获取本机IP（简单方法）
+            const hostname = window.location.hostname;
+            const port = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+            
+            if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+                document.getElementById('previewUrl').value = `${window.location.protocol}//${hostname}:${port}`;
+            } else {
+                document.getElementById('previewUrl').value = `http://localhost:${port}`;
+            }
+        }
+
+        // 获取本机IP (更准确的方法)
+        function getLocalIP() {
+            // 创建一个简单的连接来获取本机IP
+            const pc = new RTCPeerConnection({
+                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+            });
+            
+            pc.createDataChannel('');
+            pc.createOffer().then(offer => pc.setLocalDescription(offer));
+            
+            pc.onicecandidate = event => {
+                if (event.candidate) {
+                    const candidate = event.candidate.candidate;
+                    const match = candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+                    if (match) {
+                        const ip = match[1];
+                        if (ip !== '127.0.0.1') {
+                            document.getElementById('previewUrl').value = `http://${ip}:8000`;
+                            showToast('已自动获取本机IP地址');
+                        }
+                    }
+                }
+            };
+            
+            // 备用方法：从当前位置获取
+            setTimeout(() => {
+                const currentHost = window.location.hostname;
+                if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+                    document.getElementById('previewUrl').value = `${window.location.protocol}//${currentHost}:8000`;
+                }
+            }, 1000);
+        }
+
+        // 生成二维码
+        function generateQRCode() {
+            const previewUrl = document.getElementById('previewUrl').value.trim();
+            const targetUrl = document.getElementById('targetUrl').value.trim();
+            
+            if (!previewUrl) {
+                showToast('请输入预览器地址', 'error');
+                return;
+            }
+            
+            if (!targetUrl) {
+                showToast('请输入目标网站URL', 'error');
+                return;
+            }
+            
+            // 构建最终的URL
+            const finalUrl = `${previewUrl}?target=${encodeURIComponent(targetUrl)}`;
+            
+            // 清空容器
+            const qrContainer = document.getElementById('qrcode');
+            const placeholder = document.getElementById('placeholder');
+            const urlDisplay = document.getElementById('finalUrl');
+            
+            qrContainer.innerHTML = '';
+            placeholder.style.display = 'none';
+            
+            // 生成二维码
+            QRCode.toCanvas(qrContainer, finalUrl, {
+                width: 200,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            }, function(error) {
+                if (error) {
+                    console.error(error);
+                    showToast('二维码生成失败', 'error');
+                    placeholder.style.display = 'block';
+                    placeholder.textContent = '二维码生成失败';
+                } else {
+                    console.log('二维码生成成功!');
+                    showToast('二维码生成成功！');
+                    
+                    // 显示最终URL
+                    urlDisplay.textContent = finalUrl;
+                    urlDisplay.style.display = 'block';
+                    
+                    // 添加点击复制功能
+                    urlDisplay.style.cursor = 'pointer';
+                    urlDisplay.title = '点击复制URL';
+                    urlDisplay.onclick = function() {
+                        copyToClipboard(finalUrl);
+                    };
+                }
+            });
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('URL已复制到剪贴板');
+                });
+            } else {
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('URL已复制到剪贴板');
+                } catch (err) {
+                    showToast('复制失败，请手动复制', 'error');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // 显示提示消息
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'error' ? '#dc3545' : '#28a745'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-size: 14px;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                toast.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // 支持回车键生成二维码
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+    </script>
+</body>
+</html> 

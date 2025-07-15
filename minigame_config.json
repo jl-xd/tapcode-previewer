@@ -1,0 +1,13 @@
+{
+    "projectID": "tapcode-previewer",
+    "tapID": 5099774,
+    "title": "TapCode Previewer",
+    "outDirectory": "dist/",
+    "screenOrientation": "portrait",
+    "description": "A mobile debugger designed for previewing websites on mobile devices.",
+    "tags": ["开发工具", "AI"],
+    "versionName": "1.0.0",
+    "banner": ["taptap-asset/banner.jpg"],
+    "icon": ["taptap-asset/icon.png"],
+    "screenshots": ["taptap-asset/screenshot1.png"]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "tapcode-previewer",
+  "version": "1.0.0",
+  "description": "TapCode 移动端网页预览器",
+  "main": "index.html",
+  "scripts": {
+    "build": "build.bat",
+    "build:linux": "chmod +x build.sh && ./build.sh"
+  },
+  "keywords": [
+    "mobile",
+    "preview",
+    "web",
+    "debug",
+    "tapcode"
+  ],
+  "author": "TapCode Team",
+  "license": "MIT"
+} 
